@@ -6,7 +6,7 @@
 </script>
 
 <svelte:head>
-  <title>Season’s Greetings From {$from}</title>
+  <title>Season’s greetings from {$from}</title>
   <meta name="description" content="From {$from}" />
 </svelte:head>
 
