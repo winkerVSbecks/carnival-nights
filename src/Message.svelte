@@ -5,6 +5,11 @@
   export let visible = false;
 </script>
 
+<svelte:head>
+  <title>Season’s Greetings From {$from}</title>
+  <meta name="description" content="From {$from}" />
+</svelte:head>
+
 {#if visible}
 <section transition:fade="{{ delay: 200 }}" class="message">
   <h1 class="headline">Season&rsquo;s Greetings</h1>
