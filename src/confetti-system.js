@@ -25,7 +25,9 @@ const colors = [
   '#459A69',
 ].map((c) => Color.parse(c).rgb);
 
-export default function initConfettiSystem(canvasEl) {
+export default function initConfettiSystem(canvasEl, overrides) {
+  if (!canvasEl) return () => {};
+
   const ctx = canvasEl.getContext('2d');
   let width, height, scale;
 
@@ -45,17 +47,16 @@ export default function initConfettiSystem(canvasEl) {
     x: 0,
     y: 0,
     colors,
+    ...overrides,
   };
 
   /**
    * Setup
    */
   function setCanvasSize() {
-    const w = window.innerWidth;
-    const h = window.innerHeight;
-
-    canvasEl.style.width = w + 'px';
-    canvasEl.style.height = h + 'px';
+    const rect = canvasEl.getBoundingClientRect();
+    const w = rect.width;
+    const h = rect.height;
 
     scale = window.devicePixelRatio;
     canvasEl.getContext('2d').scale(scale, scale);
@@ -64,15 +65,6 @@ export default function initConfettiSystem(canvasEl) {
     height = Math.floor(h * scale);
     canvasEl.width = width;
     canvasEl.height = height;
-
-    // responsive behaviour
-    if (w < 768) {
-      options.radiusRatio = 0.012;
-      options.velocityFactor = 0.08;
-    } else {
-      options.radiusRatio = 0.008;
-      options.velocityFactor = 0.075;
-    }
   }
 
   let particles = Array.from(Array(options.particleCount).keys()).map(() =>
@@ -99,6 +91,7 @@ export default function initConfettiSystem(canvasEl) {
   /**
    * Draw
    */
+  let running = true;
   animLoop(function (deltaT, now) {
     ctx.clearRect(0, 0, width, height);
     TICK++;
@@ -122,6 +115,8 @@ export default function initConfettiSystem(canvasEl) {
     particles.forEach((particle) => {
       drawParticle(ctx, TICK, particle);
     });
+
+    return running;
   });
 
   /**
@@ -187,6 +182,11 @@ export default function initConfettiSystem(canvasEl) {
       }, 1000);
     }
   }
+
+  // destroy
+  return () => {
+    running = false;
+  };
 }
 
 /**
